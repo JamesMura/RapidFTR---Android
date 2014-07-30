@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.View;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.io.CharStreams;
+import com.google.inject.Inject;
 import com.rapidftr.R;
 import com.rapidftr.forms.FormSection;
 import com.rapidftr.model.BaseModel;
@@ -25,6 +26,7 @@ import java.util.Arrays;
 public abstract class BaseEnquiryActivity extends CollectionActivity {
     public static final String PHOTO_KEYS = "photo_keys";
     protected Enquiry enquiry;
+    @Inject
     protected EnquiryRepository enquiryRepository;
     public static final ObjectMapper JSON_MAPPER = new ObjectMapper();
     protected boolean editable = true;
@@ -40,8 +42,7 @@ public abstract class BaseEnquiryActivity extends CollectionActivity {
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState){
-        enquiryRepository = inject(EnquiryRepository.class);
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
     }
 
@@ -56,13 +57,13 @@ public abstract class BaseEnquiryActivity extends CollectionActivity {
         String enquiryId = bundle.getString("id");
         Enquiry retrievedEnquiry = enquiryRepository.get(enquiryId);
         enquiryRepository.close();
-        
+
         JSONObject criteria = removeCriteria(retrievedEnquiry);
 
         return addCriteriaKeysAndValuesToEnquiry(retrievedEnquiry, criteria);
     }
 
-    protected JSONObject removeCriteria(Enquiry enquiry){
+    protected JSONObject removeCriteria(Enquiry enquiry) {
         return (JSONObject) enquiry.remove("criteria");
     }
 
@@ -70,8 +71,8 @@ public abstract class BaseEnquiryActivity extends CollectionActivity {
         JSONArray criteriaKeys = criteria.names();
         for (int i = 0; i < criteriaKeys.length(); i++) {
             String key = criteriaKeys.get(i).toString();
-            if(key.equals(PHOTO_KEYS))
-                enquiry.put(key,new JSONArray(criteria.getString(key)));
+            if (key.equals(PHOTO_KEYS))
+                enquiry.put(key, new JSONArray(criteria.getString(key)));
             else
                 enquiry.put(key, criteria.get(key).toString());
         }
@@ -117,7 +118,7 @@ public abstract class BaseEnquiryActivity extends CollectionActivity {
     }
 
     private Enquiry saveEnquiry() throws Exception {
-        @Cleanup EnquiryRepository repository = inject(EnquiryRepository.class);
+        @Cleanup EnquiryRepository repository = enquiryRepository;
         if (enquiry.isNew()) {
             enquiry.setCreatedBy(getCurrentUser().getUserName());
             enquiry.setOrganisation(getCurrentUser().getOrganisation());

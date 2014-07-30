@@ -36,7 +36,7 @@ public class ViewAllChildrenActivityTest {
         activityController = SpyActivityController.of(ViewAllChildrenActivity.class);
         activity = activityController.attach().get();
         Injector mockInjector = mock(Injector.class);
-        doReturn(mockInjector).when(activity).getInjector();
+//        doReturn(mockInjector).when(activity).getInjector();
         doReturn(childRepository).when(mockInjector).getInstance(ChildRepository.class);
     }
 

@@ -1,7 +1,6 @@
 package com.rapidftr;
 
 import android.app.Application;
-import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -15,7 +14,6 @@ import android.util.Log;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Strings;
 import com.google.common.io.CharStreams;
-import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.rapidftr.activity.RapidFtrActivity;
 import com.rapidftr.forms.FormField;
@@ -23,7 +21,6 @@ import com.rapidftr.forms.FormSection;
 import com.rapidftr.model.User;
 import com.rapidftr.task.AsyncTaskWithDialog;
 import com.rapidftr.task.SynchronisationAsyncTask;
-import com.rapidftr.utils.ApplicationInjector;
 import lombok.Cleanup;
 import lombok.Getter;
 import lombok.Setter;
@@ -55,9 +52,6 @@ public class RapidFtrApplication extends Application {
     @Getter
     RapidFtrApplication applicationInstance;
 
-    private
-    @Getter
-    final Injector injector;
 
     protected
     @Getter
@@ -78,13 +72,10 @@ public class RapidFtrApplication extends Application {
     protected NotificationManager notificationManager;
 
     public RapidFtrApplication() {
-        this(Guice.createInjector(new ApplicationInjector()));
+        RapidFtrApplication.applicationInstance = this;
     }
 
-    public RapidFtrApplication(Injector injector) {
-        RapidFtrApplication.applicationInstance = this;
-        this.injector = injector;
-    }
+
 
     public SharedPreferences getSharedPreferences() {
         return getSharedPreferences(SHARED_PREFERENCES_FILE, MODE_PRIVATE);

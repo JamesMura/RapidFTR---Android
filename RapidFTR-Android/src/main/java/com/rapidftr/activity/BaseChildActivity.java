@@ -6,6 +6,7 @@ import android.media.MediaPlayer;
 import android.media.MediaRecorder;
 import android.os.Bundle;
 import android.widget.*;
+import com.google.inject.Inject;
 import com.rapidftr.R;
 import com.rapidftr.model.BaseModel;
 import com.rapidftr.model.Child;
@@ -24,6 +25,9 @@ public abstract class BaseChildActivity extends CollectionActivity {
     protected boolean editable = true;
     @Getter @Setter MediaRecorder mediaRecorder;
     @Getter @Setter MediaPlayer mediaPlayer;
+
+    @Inject
+    private ChildRepository childRepository;
 
     @Override
     protected Boolean getEditable() {
@@ -70,7 +74,7 @@ public abstract class BaseChildActivity extends CollectionActivity {
     }
 
     public Child load() throws JSONException {
-        @Cleanup ChildRepository repository = inject(ChildRepository.class);
+        @Cleanup ChildRepository repository = childRepository;
         String childId = getIntent().getExtras().getString("id");
         child = repository.get(childId);
         return child;
@@ -89,7 +93,7 @@ public abstract class BaseChildActivity extends CollectionActivity {
 
         child.generateUniqueId();
         child.setSynced(false);
-        @Cleanup ChildRepository repository = inject(ChildRepository.class);
+        @Cleanup ChildRepository repository = childRepository;
         repository.createOrUpdate(child);
         return child;
     }
